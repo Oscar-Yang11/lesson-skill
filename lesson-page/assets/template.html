@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 N 课　这一课的题目</title>
+<style>
+/* 讲解页样式（lesson-page skill）。单栏、宽行距；左侧是这一课的进度。不依赖外部资源。 */
+:root { --bg:#fbfaf6; --card:#ffffff; --text:#22211f; --muted:#6f6d66; --line:#e3e0d8; --accent:#2f6fd0; --accent-soft:#eaf1fc;
+  --ok:#2a8a4a; --ok-soft:#eaf6ee; --warn:#b06a00; --warn-soft:#fff3df; --ask:#7a3fc0; --ask-soft:#f3ecfb; --code:#f1efe9; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1b1b1a; --card:#242423; --text:#e9e7e1; --muted:#a09d95; --line:#3a3936; --accent:#6ea4f2; --accent-soft:#1f2c40;
+  --ok:#62c283; --ok-soft:#1d2f24; --warn:#eaa94a; --warn-soft:#33281a; --ask:#b890ee; --ask-soft:#2b2238; --code:#2b2b29; } }
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--bg); color:var(--text); font:17px/1.85 -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif; }
+main { max-width:760px; margin:0 auto; padding:36px 22px 120px; }
+a { color:var(--accent); }
+h1 { font-size:1.75rem; line-height:1.35; margin:6px 0 18px; }
+.series { color:var(--muted); font-size:.9rem; } .series a { color:var(--muted); }
+h2 { font-size:1.3rem; line-height:1.45; margin:64px 0 14px; padding-top:8px; }
+h2 .n { display:inline-block; min-width:1.7em; height:1.7em; line-height:1.7em; text-align:center; border-radius:50%; background:var(--accent); color:#fff; font-size:.85rem; margin-right:10px; vertical-align:2px; }
+h3 { font-size:1.05rem; margin:28px 0 8px; }
+p { margin:14px 0; }
+b.term { background:linear-gradient(transparent 62%, var(--accent-soft) 62%); }
+code { background:var(--code); padding:1px 5px; border-radius:4px; font-size:.86em; }
+pre { background:var(--code); padding:14px 16px; border-radius:10px; overflow:auto; font-size:.82rem; line-height:1.6; white-space:pre-wrap; word-break:break-word; }
+
+/* 开头框：这一课回答什么、读完你能…… */
+.goal { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 22px; margin:18px 0 8px; }
+.goal p { margin:6px 0; } .goal ul { margin:6px 0; padding-left:22px; } .goal .q { font-size:1.08rem; font-weight:600; }
+.goal .meta { color:var(--muted); font-size:.88rem; }
+
+/* 图：图 + 一句话图注（说“从图上能看出什么”） */
+figure.fig { margin:22px 0; }
+figure.fig img, figure.fig svg { display:block; width:100%; height:auto; border-radius:10px; }
+figure.fig figcaption { color:var(--muted); font-size:.9rem; line-height:1.65; margin-top:8px; }
+figure.fig figcaption b { color:var(--text); }
+.strip { display:grid; gap:8px; } .strip > div { min-width:0; } .strip img { width:100%; border-radius:8px; display:block; }
+
+/* 为什么这样做 / 小结 / 想一想 / 想看细节 */
+.why { border-left:4px solid var(--warn); background:var(--warn-soft); padding:10px 16px; border-radius:0 10px 10px 0; margin:18px 0; }
+.why > b:first-child { color:var(--warn); }
+.recap { background:var(--ok-soft); border-radius:10px; padding:12px 16px; margin:22px 0 0; }
+.recap > b:first-child { color:var(--ok); }
+.next { color:var(--ask); font-weight:600; margin:12px 0 0; }
+details { border:1px solid var(--line); border-radius:10px; padding:10px 16px; margin:18px 0; background:var(--card); }
+details > summary { cursor:pointer; font-weight:600; }
+details.think > summary { color:var(--ask); } details.think { background:var(--ask-soft); border-color:transparent; }
+details.more > summary { color:var(--muted); font-weight:500; }
+details[open] > summary { margin-bottom:8px; }
+
+/* 出处标记：实测 / 你定的 / 我的判断 / 文献 / 代码。数字指向文末的出处表 */
+.src { font-size:.72rem; padding:1px 7px; border-radius:99px; margin-left:3px; white-space:nowrap; vertical-align:2px; text-decoration:none; font-weight:600; }
+.src.m { background:var(--accent-soft); color:var(--accent); }   /* 实测 */
+.src.u { background:var(--ok-soft); color:var(--ok); }           /* 你定的 */
+.src.j { background:var(--warn-soft); color:var(--warn); }       /* 我的判断 */
+.src.p { background:var(--ask-soft); color:var(--ask); }         /* 文献 */
+.src.c { background:var(--code); color:var(--muted); }           /* 代码 */
+
+/* 答案小牌子（三选一的答案这类离散结果） */
+.chip { display:inline-block; padding:1px 9px; border-radius:6px; font-size:.84rem; background:var(--code); margin:2px 3px 2px 0; white-space:nowrap; }
+.chip.on { background:var(--accent); color:#fff; } .chip.go { background:var(--ok); color:#fff; }
+
+table { border-collapse:collapse; width:100%; font-size:.9rem; line-height:1.6; margin:14px 0; }
+th, td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
+thead th { color:var(--muted); font-weight:600; }
+.tw { overflow-x:auto; }
+
+/* 进度：这一课的各节，读到哪里 */
+nav.rail { position:fixed; left:max(14px, calc(50% - 380px - 250px)); top:90px; width:220px; font-size:.82rem; line-height:1.5; }
+nav.rail .t { color:var(--muted); margin-bottom:8px; }
+nav.rail a { display:block; color:var(--muted); text-decoration:none; padding:5px 0 5px 12px; border-left:2px solid var(--line); }
+nav.rail a.on { color:var(--text); border-left-color:var(--accent); font-weight:600; }
+@media (max-width:1290px) { nav.rail { display:none; } }
+.end { margin-top:70px; padding-top:18px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+<nav class="rail" aria-label="这一课的进度">
+  <div class="t">这一课</div>
+  <!-- 每节一行，文字就是那一节的问题（短一点） -->
+  <a href="#s1">1　第一节的问题</a>
+  <a href="#s2">2　第二节的问题</a>
+  <a href="#recap">回顾</a>
+</nav>
+<main>
+<div class="series"><a href="index.html">课程目录</a>　·　第 N 课 / 共 M 课</div>
+<h1>第 N 课　题目：一句让人想往下读的话</h1>
+
+<div class="goal">
+  <p class="q">这一课回答的问题：……？</p>
+  <p>读完你能：</p>
+  <ul><li>……</li><li>……</li><li>……</li></ul>
+  <p class="meta">约 10 分钟　·　需要先知道：……</p>
+</div>
+
+<h2 id="s1"><span class="n">1</span>这一节要回答的问题？</h2>
+<p>从一个具体的场景开始……</p>
+<figure class="fig"><img src="fig/xxx.jpg" alt=""><figcaption><b>图 1</b>　一句话：从这张图能看出什么。</figcaption></figure>
+<p>新名词第一次出现：<b class="term">目标位姿</b>，就是……。一个说法的出处标在后面<a class="src m" href="#src1">实测 1</a>。</p>
+<div class="why"><b>为什么这样做</b>　不这样做会怎样……</div>
+<details class="think"><summary>想一想：一个读者此刻能答出来的小问题？</summary><p>答案……</p></details>
+<details class="more"><summary>想看细节：提示词原文 / 伪代码 / 完整的表</summary><pre>……</pre></details>
+<div class="recap"><b>到这里</b>　一两句话：我们现在知道了什么。</div>
+<p class="next">可是……？（下一节的问题）</p>
+
+<h2 id="s2"><span class="n">2</span>下一节的问题？</h2>
+<p>……</p>
+
+<h2 id="recap"><span class="n">✓</span>回顾：把这条线连起来</h2>
+<p>……</p>
+
+<div class="end">
+<h3>这一课没讲什么</h3>
+<p>……下一课的问题是：……</p>
+<h3>出处</h3>
+<div class="tw"><table><thead><tr><th>#</th><th>说法</th><th>出处</th></tr></thead><tbody>
+<tr id="src1"><td>1</td><td>……</td><td>实测：在什么数据上、多少样本、怎么量的</td></tr>
+</tbody></table></div>
+<h3>名词</h3>
+<div class="tw"><table><tbody><tr><th>目标位姿</th><td>……</td></tr></tbody></table></div>
+</div>
+</main>
+<script>
+// 进度：滚动到哪一节，左侧对应的一行高亮。没有脚本页面照样能读。
+(function () {
+  var links = [].slice.call(document.querySelectorAll('nav.rail a'));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function upd() {
+    var y = window.scrollY + 140, k = 0;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) k = i; });
+    links.forEach(function (a, i) { a.classList.toggle('on', i === k); });
+  }
+  window.addEventListener('scroll', upd, { passive: true }); upd();
+})();
+</script>
+</body>
+</html>
